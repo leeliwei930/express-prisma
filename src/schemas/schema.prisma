@@ -1,0 +1,38 @@
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model Album {
+    id        String         @id @default(uuid())
+    name      String         @db.VarChar(255)
+    createdAt DateTime       @default(now())
+    updatedAt DateTime       @updatedAt
+    images    BlobsOnAlbum[]
+}
+
+model BlobsOnAlbum {
+    album   Album  @relation(fields: [albumId], references: [id])
+    albumId String
+    blob    Blobs  @relation(fields: [blobId], references: [id])
+    blobId  String
+
+    @@id([albumId, blobId])
+}
+
+model Blobs {
+    id           String         @id @default(uuid())
+    filename     String         @db.VarChar(255)
+    mimetype     String         @db.VarChar(255)
+    size         Int            @db.UnsignedInt
+    metadata     Json?
+    checksum     String         @db.VarChar(255)
+    disk         String         @db.VarChar(255)
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+    BlobsOnAlbum BlobsOnAlbum[]
+}

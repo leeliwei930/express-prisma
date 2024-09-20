@@ -4,7 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node src/index.ts"
+    "dev": "ts-node src/index.ts",
+    "prisma-generate": "prisma generate --schema src/schemas/schema.prisma",
+    "prisma-migrate": "prisma migrate"
   },
   "dependencies": {
     "@prisma/client": "^5.19.1",
