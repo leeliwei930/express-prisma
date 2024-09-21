@@ -8,11 +8,12 @@ generator client {
 }
 
 model Album {
-    id        String         @id @default(uuid())
-    name      String         @db.VarChar(255)
-    createdAt DateTime       @default(now())
-    updatedAt DateTime       @updatedAt
-    images    BlobsOnAlbum[]
+    id          String         @id @default(uuid())
+    name        String         @db.VarChar(255)
+    description String?        @db.Text
+    createdAt   DateTime       @default(now())
+    updatedAt   DateTime       @updatedAt
+    images      BlobsOnAlbum[]
 }
 
 model BlobsOnAlbum {
