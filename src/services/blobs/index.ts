@@ -23,11 +23,16 @@ const prismaClient = new PrismaClient();
 const generateRandomFilename = (file: Express.Multer.File) => {
   const randomFileKey = nanoid(25);
   let fileKeyPrefix = (fileKey: string): string => {
+    // some security measure to prevent file guessing
+    // we take the generated file key, take the first 2 characters as folder root, and last 2 as subdir
+    // so the file will be stored in a folder structure like this: /ab/cd/abcdefg.ext
     let [pathRoot, pathSubDir] = [fileKey.slice(0, 2), fileKey.slice(2, 4)];
     return `${pathRoot}/${pathSubDir}`;
   };
 
+  // Extractout the filename without extension
   let originalFileName = file.originalname.split(".").shift();
+  // priginal filename extension
   let originalFileExtension = file.originalname.split(".").pop();
 
   return `${fileKeyPrefix(

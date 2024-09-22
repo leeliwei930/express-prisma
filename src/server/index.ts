@@ -3,6 +3,7 @@ import apiRoutes from "../routes/api";
 
 const app = express();
 
+// Global exception handling middleware
 const exceptionHandler: ErrorRequestHandler = (err, _, res, __) => {
   console.error(err.stack);
   return res.status(500).json({ error: "Something broke!" });
