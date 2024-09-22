@@ -8,7 +8,9 @@ router.get("/health", (req, res, _) => {
 });
 
 const albumRoute = Router();
+router.use("/albums", albumRoute);
+
+// This register the endpoint /api/v1/albums/create
 albumRoute.post("/create", albumsController.create);
 
-router.use("/albums", albumRoute);
 export default router;
