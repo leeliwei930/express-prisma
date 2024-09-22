@@ -19,10 +19,15 @@ const photosSerializer = async (album: Album) => {
   });
 
   let photos = await Promise.all(
-    blobs.map(
-      async (blob) =>
-        await blobsService.getSignedUrl({ key: blob.blobId, expiresIn: 60 })
-    )
+    blobs.map(async (albumBlobs) => {
+      let blob = await prismaClient.blobs.findUnique({
+        where: {
+          id: albumBlobs.blobId,
+        },
+      });
+
+      return await blobsService.getSignedUrl({ key: blob!.key, expiresIn: 60 });
+    })
   );
   return photos;
 };

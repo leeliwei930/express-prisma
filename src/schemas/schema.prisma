@@ -27,6 +27,7 @@ model BlobsOnAlbum {
 
 model Blobs {
     id           String         @id @default(uuid())
+    key          String         @unique @db.VarChar(255)
     filename     String         @db.VarChar(255)
     mimetype     String         @db.VarChar(255)
     size         Int            @db.UnsignedInt

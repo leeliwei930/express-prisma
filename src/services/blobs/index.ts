@@ -57,6 +57,7 @@ const uploadAndCreate = async (file: Express.Multer.File) => {
     data: {
       checksum: uploadedFile.ChecksumCRC32C ?? "",
       filename: file.originalname,
+      key: generatedUploadedFileName,
       size: file.size,
       mimetype: file.mimetype,
       disk: "s3",
@@ -79,7 +80,7 @@ const createPresignedUrl = async ({
 }) => {
   const signedUrl =
     process.env.APP_ENV === "development"
-      ? `http://localhost:4566/${bucket}/${key}`
+      ? `${process.env.S3_ENDPOINT_URL}/${bucket}/${key}`
       : `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
   const parsedSignedUrl = parseUrl(signedUrl);
   const presigner = new S3RequestPresigner({
