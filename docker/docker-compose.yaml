@@ -1,5 +1,13 @@
-
 services:
+  localstack:
+    container_name: "${LOCALSTACK_DOCKER_NAME:-localstack-main}"
+    image: localstack/localstack
+    ports:
+      - "4566:4566" # LocalStack Gateway
+      - "4510-4559:4510-4559" # external services port range
+    volumes:
+      - localstacks_vol:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
   mysql:
     image: mysql:lts
     restart: always
@@ -15,3 +23,4 @@ services:
 
 volumes:
   mysql_data:
+  localstacks_vol:
