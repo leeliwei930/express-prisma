@@ -1,12 +1,11 @@
 import { S3 } from "@aws-sdk/client-s3";
 import { S3RequestPresigner } from "@aws-sdk/s3-request-presigner";
 import { formatUrl } from "@aws-sdk/util-format-url";
-import { PrismaClient } from "@prisma/client";
+import { Blobs, PrismaClient } from "@prisma/client";
 import { Hash } from "@smithy/hash-node";
 import { HttpRequest } from "@smithy/protocol-http";
 import { parseUrl } from "@smithy/url-parser";
 import { nanoid } from "nanoid";
-const { NodeHttpHandler } = require("@smithy/node-http-handler");
 console.log(process.env.S3_ENDPOINT_URL);
 const s3Client = new S3({
   endpoint: process.env.S3_ENDPOINT_URL,
@@ -40,9 +39,8 @@ const generateRandomFilename = (file: Express.Multer.File) => {
   )}/${originalFileName}_${randomFileKey}.${originalFileExtension}`;
 };
 
-const uploadAndCreate = async (file: Express.Multer.File) => {
+const uploadAndCreate = async (file: Express.Multer.File) : Promise<Blobs> => {
   let generatedUploadedFileName = generateRandomFilename(file);
-
   let uploadedFile = await s3Client.putObject({
     Bucket: process.env.S3_BUCKET_NAME,
     Key: generatedUploadedFileName,

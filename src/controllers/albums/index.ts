@@ -39,24 +39,33 @@ const createHandler: RequestHandler = async (req, res, next) => {
   };
 
   try {
-    let blob = await blobsService.uploadAndCreate(uploadedFiles.photos[0]);
-    let album = await prisma.album.create({
-      data: {
-        name: params.name,
-        description: params.description,
-      },
-    });
-
-    await prisma.blobsOnAlbum.create({
-      data: {
-        blobId: blob.id,
-        albumId: album.id,
-      },
-    });
-
-    let albumCreatedResponse = await albumSerializer.albumCreatedResponse(
-      album
+    let uploadedBlob = await blobsService.uploadAndCreate(
+      uploadedFiles.photos[0]
     );
+    let albumWithBlobs = await prisma.blobsOnAlbum.create({
+      data: {
+        album: {
+          create: {
+            name: params.name,
+            description: params.description,
+          },
+        },
+        blob: {
+          connect: {
+            id: uploadedBlob.id,
+          },
+        },
+      },
+      include: {
+        album: true,
+        blob: true,
+      },
+    });
+
+    let albumCreatedResponse = await albumSerializer.albumCreatedResponse({
+      album: albumWithBlobs.album,
+      blobs: [albumWithBlobs.blob],
+    });
     return res.json(albumCreatedResponse);
   } catch (error) {
     next(error);

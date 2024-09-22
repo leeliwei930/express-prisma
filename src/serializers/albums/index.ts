@@ -1,5 +1,5 @@
 import blobsService from "@/services/blobs/index";
-import { Album, PrismaClient } from "@prisma/client";
+import { Album, Blobs, PrismaClient } from "@prisma/client";
 
 const prismaClient = new PrismaClient();
 
@@ -11,31 +11,22 @@ interface CreateAlbumResponse {
   photos: string[];
 }
 
-const photosSerializer = async (album: Album) => {
-  let blobs = await prismaClient.blobsOnAlbum.findMany({
-    where: {
-      albumId: album.id,
-    },
-  });
-
+const photosSerializer = async (blobs: Blobs[]) => {
   let photos = await Promise.all(
-    blobs.map(async (albumBlobs) => {
-      let blob = await prismaClient.blobs.findUnique({
-        where: {
-          id: albumBlobs.blobId,
-        },
-      });
-
+    blobs.map(async (blob) => {
       return await blobsService.getSignedUrl({ key: blob!.key, expiresIn: 60 });
     })
   );
   return photos;
 };
 
-const albumCreatedResponse = async (
-  album: Album
-): Promise<CreateAlbumResponse> => {
-  let photos = await photosSerializer(album);
+const albumCreatedResponse = async (albumWithBlobs: {
+  album: Album;
+  blobs: Blobs[];
+}): Promise<CreateAlbumResponse> => {
+  let { album, blobs } = albumWithBlobs;
+  let photos = await photosSerializer(blobs);
+
   return {
     id: album.id,
     name: album.name,
